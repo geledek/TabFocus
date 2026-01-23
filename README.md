@@ -1,6 +1,32 @@
-# TabFocus
+<p align="center">
+  <img src="store/promo-marquee.png" alt="TabFocus Banner" width="100%">
+</p>
 
-A Chrome extension to manage browser tabs efficiently with the key differentiator: **View One Group at a Time**.
+<h1 align="center">TabFocus</h1>
+
+<p align="center">
+  <strong>Focus on one tab group at a time. Stay productive, reduce clutter.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/geledek/TabFocus/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+  </a>
+  <img src="https://img.shields.io/badge/manifest-v3-green.svg" alt="Manifest V3">
+  <img src="https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Webpack-5-8DD6F9?logo=webpack&logoColor=black" alt="Webpack">
+  <img src="https://img.shields.io/badge/Chrome-Extension-4285F4?logo=google-chrome&logoColor=white" alt="Chrome Extension">
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+---
 
 ## Features
 
@@ -25,7 +51,7 @@ A Chrome extension to manage browser tabs efficiently with the key differentiato
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/geledek/TabFocus.git
    cd TabFocus
    ```
 
@@ -115,14 +141,6 @@ This extension requires the following permissions:
 - `tabGroups` - Manage tab groups
 - `storage` - Save settings and sessions
 - `alarms` - Auto-save functionality
-
-## Tech Stack
-
-- **TypeScript** - Type-safe JavaScript
-- **Webpack** - Module bundling
-- **Tailwind CSS** - Utility-first styling
-- **Fuse.js** - Fuzzy search
-- **Chrome Extension Manifest V3**
 
 ## Contributing
 
