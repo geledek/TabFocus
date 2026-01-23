@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabFocus</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body class="w-popup min-h-[400px] max-h-popup text-gray-900 dark:text-gray-100">
+  <div class="flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl overflow-hidden m-1 shadow-lg">
+    <!-- Header -->
+    <header class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="6" fill="#1a73e8"/>
+          <rect x="6" y="8" width="20" height="4" rx="2" fill="white"/>
+          <rect x="6" y="14" width="20" height="4" rx="2" fill="white" opacity="0.7"/>
+          <rect x="6" y="20" width="20" height="4" rx="2" fill="white" opacity="0.4"/>
+        </svg>
+        <h1 class="text-lg font-semibold">TabFocus</h1>
+      </div>
+      <div class="flex items-center gap-0.5">
+        <button id="new-group-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-blue-600 dark:text-blue-400" title="New Group">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </button>
+        <button id="auto-group-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Auto-group by domain">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+        </button>
+        <button id="find-duplicates-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Find duplicates">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </button>
+        <button id="save-session-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Save session">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+          </svg>
+        </button>
+        <button id="sessions-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Saved sessions">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+          </svg>
+        </button>
+        <div class="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+        <button id="show-all-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Show all groups">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        <button id="settings-btn" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Settings">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search tabs..."
+          class="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+      </div>
+    </div>
+
+    <!-- Search Results (hidden by default) -->
+    <div id="search-results" class="hidden flex-1 overflow-y-auto">
+      <div class="p-3">
+        <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Search Results</div>
+        <ul id="search-results-list" class="space-y-1"></ul>
+      </div>
+    </div>
+
+    <!-- Groups List -->
+    <div id="groups-container" class="flex-1 overflow-y-auto">
+      <!-- Active Group Indicator -->
+      <div id="active-group-indicator" class="hidden mx-3 mt-3 px-3 py-2.5 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-blue-700 dark:text-blue-300">
+            Viewing: <strong id="active-group-name"></strong>
+          </span>
+          <button id="exit-focus-btn" class="text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800/50 px-2 py-1 rounded-lg">
+            Exit Focus
+          </button>
+        </div>
+      </div>
+
+      <!-- Groups -->
+      <div id="groups-list" class="p-3 space-y-2">
+        <!-- Groups will be rendered here -->
+        <div id="loading" class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- New Group Modal -->
+  <div id="new-group-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-5 w-80">
+      <h2 class="text-lg font-semibold mb-4">Create New Group</h2>
+      <div class="space-y-4">
+        <div>
+          <label for="group-name-input" class="block text-sm font-medium mb-1.5">Group Name</label>
+          <input
+            type="text"
+            id="group-name-input"
+            placeholder="Enter group name"
+            class="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Color</label>
+          <div id="color-picker" class="flex gap-2 flex-wrap">
+            <!-- Color options rendered by JS -->
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="cancel-group-btn" class="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
+            Cancel
+          </button>
+          <button id="create-group-btn" class="px-4 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-xl">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Session Modal -->
+  <div id="save-session-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-5 w-80">
+      <h2 class="text-lg font-semibold mb-4">Save Session</h2>
+      <div class="space-y-4">
+        <div>
+          <label for="session-name-input" class="block text-sm font-medium mb-1.5">Session Name</label>
+          <input
+            type="text"
+            id="session-name-input"
+            placeholder="Enter session name"
+            class="w-full px-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          This will save all current tab groups and tabs.
+        </p>
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="cancel-save-session-btn" class="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
+            Cancel
+          </button>
+          <button id="confirm-save-session-btn" class="px-4 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-xl">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sessions List Modal -->
+  <div id="sessions-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-5 w-96 max-h-96 flex flex-col">
+      <h2 class="text-lg font-semibold mb-4">Saved Sessions</h2>
+      <div id="sessions-list" class="flex-1 overflow-y-auto space-y-2 min-h-0">
+        <!-- Sessions will be rendered here -->
+        <div id="sessions-loading" class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
+        </div>
+      </div>
+      <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+        <button id="close-sessions-btn" class="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplicates Modal -->
+  <div id="duplicates-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-5 w-96 max-h-96 flex flex-col">
+      <h2 class="text-lg font-semibold mb-4">Duplicate Tabs</h2>
+      <div id="duplicates-list" class="flex-1 overflow-y-auto space-y-3 min-h-0">
+        <div id="duplicates-loading" class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
+        </div>
+      </div>
+      <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+        <button id="close-all-duplicates-btn" class="px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl">
+          Close All Duplicates
+        </button>
+        <button id="close-duplicates-modal-btn" class="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

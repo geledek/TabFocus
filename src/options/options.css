@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Toggle switch */
+.toggle {
+  @apply relative w-11 h-6 appearance-none bg-gray-300 dark:bg-gray-600 rounded-full cursor-pointer transition-colors;
+}
+
+.toggle:checked {
+  @apply bg-blue-600;
+}
+
+.toggle::before {
+  content: '';
+  @apply absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform;
+}
+
+.toggle:checked::before {
+  @apply translate-x-5;
+}
+
+.toggle:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800;
+}
+
+/* Input focus styles */
+input[type="number"]:focus,
+textarea:focus {
+  @apply ring-2 ring-blue-500 border-transparent;
+}
+
+/* Storage bar */
+.storage-bar {
+  @apply h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+}
+
+.storage-bar-fill {
+  @apply h-full bg-blue-600 transition-all;
+}
+
+.storage-bar-fill.warning {
+  @apply bg-yellow-500;
+}
+
+.storage-bar-fill.danger {
+  @apply bg-red-500;
+}

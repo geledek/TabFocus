@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Popup container */
+html {
+  width: 400px;
+  min-height: 400px;
+  max-height: 600px;
+  background: transparent;
+}
+
+body {
+  width: 400px;
+  min-height: 400px;
+  max-height: 600px;
+  overflow-x: hidden;
+  background: transparent;
+}
+
+/* Modal overlay - ensure it covers the popup */
+.fixed.inset-0 {
+  position: fixed;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  width: calc(400px - 8px);
+  min-height: calc(400px - 8px);
+  border-radius: 12px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Group card styles */
+.group-card {
+  @apply rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-200;
+}
+
+.group-card:hover {
+  @apply shadow-sm;
+}
+
+.group-card-header {
+  @apply flex items-center justify-between p-2.5 cursor-pointer rounded-t-xl;
+}
+
+.group-card-header:hover {
+  @apply bg-gray-50 dark:bg-gray-800/50;
+}
+
+.group-color-indicator {
+  @apply w-3 h-3 rounded-full flex-shrink-0;
+}
+
+.group-tabs-list {
+  @apply border-t border-gray-200 dark:border-gray-700;
+}
+
+/* Tab item styles */
+.tab-item {
+  @apply flex items-center gap-2 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-colors;
+}
+
+.tab-item.active {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+}
+
+.tab-favicon {
+  @apply w-4 h-4 flex-shrink-0;
+}
+
+.tab-title {
+  @apply flex-1 text-sm truncate;
+}
+
+.tab-close-btn {
+  @apply opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-opacity;
+}
+
+/* Color picker */
+.color-option {
+  @apply w-8 h-8 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-gray-300 transition-all;
+}
+
+.color-option.selected {
+  @apply ring-2 ring-offset-2 ring-blue-500;
+}
+
+/* Search result item */
+.search-result-item {
+  @apply flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors;
+}
+
+.search-result-item.selected {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+}
+
+/* Focus indicator animation */
+@keyframes focus-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.focus-indicator {
+  animation: focus-pulse 2s ease-in-out infinite;
+}
+
+/* Loading skeleton */
+.skeleton {
+  @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+}
+
+/* Tooltip */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-gray-800 rounded whitespace-nowrap opacity-0 pointer-events-none transition-opacity;
+}
+
+[data-tooltip]:hover::after {
+  @apply opacity-100;
+}

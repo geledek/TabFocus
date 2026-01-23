@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabFocus Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <div class="max-w-2xl mx-auto py-8 px-4">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-3">
+        <svg class="w-12 h-12" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="48" rx="8" fill="#1a73e8"/>
+          <rect x="9" y="12" width="30" height="6" rx="3" fill="white"/>
+          <rect x="9" y="21" width="30" height="6" rx="3" fill="white" opacity="0.7"/>
+          <rect x="9" y="30" width="30" height="6" rx="3" fill="white" opacity="0.4"/>
+        </svg>
+        <div>
+          <h1 class="text-2xl font-bold">TabFocus Settings</h1>
+          <p class="text-gray-500 dark:text-gray-400">Customize your tab management experience</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Settings Form -->
+    <form id="settings-form" class="space-y-6">
+      <!-- Core Features -->
+      <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Core Features</h2>
+
+        <div class="space-y-4">
+          <label class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">View one group at a time</span>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Hide other groups when focusing on one</p>
+            </div>
+            <input type="checkbox" id="viewOneGroupAtATime" class="toggle">
+          </label>
+
+          <label class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">Show ungrouped tabs</span>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Keep ungrouped tabs visible when focusing</p>
+            </div>
+            <input type="checkbox" id="showUngroupedTabs" class="toggle">
+          </label>
+
+          <label class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">Auto-group by domain</span>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Automatically group tabs from the same website</p>
+            </div>
+            <input type="checkbox" id="autoGroupByDomain" class="toggle">
+          </label>
+        </div>
+      </section>
+
+      <!-- Auto-Save -->
+      <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Auto-Save</h2>
+
+        <div class="space-y-4">
+          <label class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">Enable auto-save</span>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Automatically save your tab groups</p>
+            </div>
+            <input type="checkbox" id="autoSaveEnabled" class="toggle">
+          </label>
+
+          <div>
+            <label for="autoSaveInterval" class="block font-medium mb-1">Auto-save interval (seconds)</label>
+            <input
+              type="number"
+              id="autoSaveInterval"
+              min="10"
+              max="300"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+
+          <div>
+            <label for="maxSessions" class="block font-medium mb-1">Maximum saved sessions</label>
+            <input
+              type="number"
+              id="maxSessions"
+              min="5"
+              max="100"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Suspension -->
+      <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Tab Suspension (Memory Saver)</h2>
+
+        <div class="space-y-4">
+          <div>
+            <label for="suspensionTimeout" class="block font-medium mb-1">Suspend tabs after (minutes)</label>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Set to 0 to disable tab suspension</p>
+            <input
+              type="number"
+              id="suspensionTimeout"
+              min="0"
+              max="1440"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+          </div>
+
+          <div>
+            <label for="suspensionWhitelist" class="block font-medium mb-1">Never suspend these domains</label>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">One domain per line (e.g., google.com)</p>
+            <textarea
+              id="suspensionWhitelist"
+              rows="4"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="google.com&#10;github.com"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Badge -->
+      <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Extension Badge</h2>
+
+        <label class="flex items-center justify-between">
+          <div>
+            <span class="font-medium">Show tab count badge</span>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Display the number of open tabs on the icon</p>
+          </div>
+          <input type="checkbox" id="showTabCountBadge" class="toggle">
+        </label>
+      </section>
+
+      <!-- Data Management -->
+      <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Data Management</h2>
+
+        <div class="flex flex-wrap gap-3">
+          <button type="button" id="export-btn" class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+            Export All Data
+          </button>
+          <button type="button" id="import-btn" class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+            Import Data
+          </button>
+          <button type="button" id="reset-btn" class="px-4 py-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition-colors">
+            Reset to Defaults
+          </button>
+        </div>
+        <input type="file" id="import-file" accept=".json" class="hidden">
+      </section>
+
+      <!-- Storage Info -->
+      <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Storage Usage</h2>
+        <div id="storage-info" class="text-sm text-gray-600 dark:text-gray-400">
+          Loading...
+        </div>
+      </section>
+    </form>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+      <p>TabFocus v1.0.0</p>
+      <p class="mt-1">
+        <a href="#" class="hover:underline">Report an issue</a>
+        &middot;
+        <a href="#" class="hover:underline">Privacy Policy</a>
+      </p>
+    </footer>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>

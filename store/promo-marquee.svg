@@ -1,0 +1,42 @@
+<svg width="1400" height="560" viewBox="0 0 1400 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a73e8"/>
+      <stop offset="100%" style="stop-color:#1557b0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="560" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="1300" cy="100" r="200" fill="white" opacity="0.05"/>
+  <circle cx="100" cy="460" r="150" fill="white" opacity="0.05"/>
+  
+  <!-- Icon -->
+  <g transform="translate(150, 180)">
+    <rect width="200" height="200" rx="40" fill="white" opacity="0.2"/>
+    <rect x="36" y="50" width="128" height="28" rx="10" fill="white"/>
+    <rect x="36" y="86" width="128" height="28" rx="10" fill="white" opacity="0.7"/>
+    <rect x="36" y="122" width="128" height="28" rx="10" fill="white" opacity="0.4"/>
+  </g>
+  
+  <!-- Main text -->
+  <text x="400" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold" fill="white">TabFocus</text>
+  <text x="400" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" opacity="0.9">Focus on one tab group at a time.</text>
+  <text x="400" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" opacity="0.9">Stay productive, reduce clutter.</text>
+  
+  <!-- Feature pills -->
+  <g transform="translate(400, 400)">
+    <rect x="0" y="0" width="160" height="40" rx="20" fill="white" opacity="0.2"/>
+    <text x="80" y="26" font-family="system-ui, sans-serif" font-size="14" fill="white" text-anchor="middle">Smart Search</text>
+    
+    <rect x="180" y="0" width="160" height="40" rx="20" fill="white" opacity="0.2"/>
+    <text x="260" y="26" font-family="system-ui, sans-serif" font-size="14" fill="white" text-anchor="middle">Auto-Group</text>
+    
+    <rect x="360" y="0" width="180" height="40" rx="20" fill="white" opacity="0.2"/>
+    <text x="450" y="26" font-family="system-ui, sans-serif" font-size="14" fill="white" text-anchor="middle">Save Sessions</text>
+    
+    <rect x="560" y="0" width="180" height="40" rx="20" fill="white" opacity="0.2"/>
+    <text x="650" y="26" font-family="system-ui, sans-serif" font-size="14" fill="white" text-anchor="middle">Find Duplicates</text>
+  </g>
+</svg>

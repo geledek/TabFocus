@@ -1,0 +1,52 @@
+{
+  "name": "tabfocus",
+  "version": "1.0.0",
+  "description": "Chrome extension to manage browser tabs efficiently with view one group at a time feature",
+  "type": "module",
+  "scripts": {
+    "icons": "node scripts/convert-icons.cjs",
+    "build": "npm run icons && webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "clean": "rm -rf dist",
+    "package": "bash scripts/package.sh",
+    "store:assets": "node scripts/convert-store-assets.cjs",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "chrome-extension",
+    "tabs",
+    "tab-groups",
+    "productivity",
+    "browser"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.0",
+    "@types/sharp": "^0.31.1",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^6.10.0",
+    "html-webpack-plugin": "^5.6.0",
+    "jest": "^29.7.0",
+    "mini-css-extract-plugin": "^2.8.1",
+    "postcss": "^8.4.35",
+    "postcss-loader": "^8.1.0",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^3.4.1",
+    "ts-jest": "^29.1.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "fuse.js": "^7.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
