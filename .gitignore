@@ -35,5 +35,8 @@ package/
 # Claude Code
 .claude/
 
+# Worktrees
+.worktrees/
+
 # Old project files
 .ralph/
