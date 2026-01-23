@@ -3,31 +3,22 @@
 @tailwind utilities;
 
 /* Popup container */
-html {
-  width: 400px;
-  min-height: 400px;
-  max-height: 600px;
-  background: transparent;
-}
-
-body {
+html, body {
   width: 400px;
   min-height: 400px;
   max-height: 600px;
   overflow-x: hidden;
-  background: transparent;
 }
 
 /* Modal overlay - ensure it covers the popup */
 .fixed.inset-0 {
   position: fixed;
-  top: 4px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  width: calc(400px - 8px);
-  min-height: calc(400px - 8px);
-  border-radius: 12px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  min-height: 400px;
 }
 
 /* Custom scrollbar */

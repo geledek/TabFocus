@@ -200,17 +200,24 @@ function createGroupCard(group: TabGroup): HTMLElement {
 }
 
 /**
+ * Default favicon SVG as data URL
+ */
+const DEFAULT_FAVICON = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%239ca3af%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z%22/%3E%3C/svg%3E';
+
+/**
  * Create HTML for a tab item
  */
 function createTabItemHTML(tab: Tab, groupId: string): string {
-  const favicon = tab.favIconUrl || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%239ca3af"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>';
+  const favicon = tab.favIconUrl || DEFAULT_FAVICON;
+  const safeTitle = escapeHtml(tab.title || 'Untitled');
+  const truncatedTitle = escapeHtml(truncate(tab.title || 'Untitled', 40));
 
   return `
     <div class="tab-item group" data-tab-id="${tab.id}" data-group-id="${groupId}">
-      <img src="${favicon}" class="tab-favicon" alt="" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%239ca3af%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z%22/></svg>'">
-      <span class="tab-title" title="${tab.title}">${truncate(tab.title, 40)}</span>
-      <button class="tab-close-btn" data-action="close-tab" title="Close tab">
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <img src="${escapeHtml(favicon)}" class="tab-favicon" alt="" onerror="this.src='${DEFAULT_FAVICON}'">
+      <span class="tab-title" title="${safeTitle}">${truncatedTitle}</span>
+      <button class="tab-close-btn" data-action="close-tab" aria-label="Close tab">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
