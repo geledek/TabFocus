@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="store/promo-marquee.png" alt="TabFocus Banner" width="100%">
+  <img src="store/promo-bubbles.gif" alt="TabFocus Banner" width="100%">
 </p>
 
 <h1 align="center">TabFocus</h1>
