@@ -9,7 +9,7 @@ import {
 } from '../types';
 import { storage } from '../lib/storage';
 import { logger } from '../lib/logger';
-import { generateId, debounce, normalizeUrl } from '../lib/utils';
+import { generateId, debounce, normalizeUrl, getColorFromFaviconWithFallback } from '../lib/utils';
 
 const log = logger.scope('ServiceWorker');
 
@@ -282,7 +282,7 @@ async function deleteGroup(groupId: string): Promise<void> {
  */
 async function autoGroupByDomain(): Promise<number> {
   const tabs = await chrome.tabs.query({ currentWindow: true, groupId: chrome.tabGroups.TAB_GROUP_ID_NONE });
-  const domainMap = new Map<string, number[]>();
+  const domainMap = new Map<string, { tabIds: number[]; favicon: string | undefined }>();
 
   // Group tabs by domain
   for (const tab of tabs) {
@@ -290,8 +290,12 @@ async function autoGroupByDomain(): Promise<number> {
     try {
       const url = new URL(tab.url);
       const domain = url.hostname.replace(/^www\./, '');
-      const existing = domainMap.get(domain) || [];
-      existing.push(tab.id);
+      const existing = domainMap.get(domain) || { tabIds: [], favicon: undefined };
+      existing.tabIds.push(tab.id);
+      // Keep the first valid favicon
+      if (!existing.favicon && tab.favIconUrl) {
+        existing.favicon = tab.favIconUrl;
+      }
       domainMap.set(domain, existing);
     } catch {
       // Invalid URL, skip
@@ -301,18 +305,144 @@ async function autoGroupByDomain(): Promise<number> {
   let groupsCreated = 0;
 
   // Create groups for domains with multiple tabs
-  for (const [domain, tabIds] of domainMap) {
+  for (const [domain, { tabIds, favicon }] of domainMap) {
     if (tabIds.length >= 2) {
+      // Get color from favicon (with Google favicon service fallback)
+      const color = await getColorFromFaviconWithFallback(favicon, domain);
+
       const groupId = await chrome.tabs.group({ tabIds });
       await chrome.tabGroups.update(groupId, {
         title: domain,
-        color: 'blue',
+        color,
       });
       groupsCreated++;
     }
   }
 
   return groupsCreated;
+}
+
+/**
+ * Group ungrouped tabs from a specific domain
+ */
+async function groupTabsFromDomain(domain: string): Promise<boolean> {
+  log.info(`[groupTabsFromDomain] Starting for domain: ${domain}`);
+
+  const tabs = await chrome.tabs.query({ currentWindow: true, groupId: chrome.tabGroups.TAB_GROUP_ID_NONE });
+  const tabIds: number[] = [];
+  let favicon: string | undefined;
+
+  // Find ungrouped tabs matching the domain
+  for (const tab of tabs) {
+    if (!tab.url || !tab.id) continue;
+    try {
+      const url = new URL(tab.url);
+      const tabDomain = url.hostname.replace(/^www\./, '');
+      if (tabDomain === domain) {
+        tabIds.push(tab.id);
+        // Keep the first valid favicon
+        if (!favicon && tab.favIconUrl) {
+          favicon = tab.favIconUrl;
+        }
+      }
+    } catch {
+      // Invalid URL, skip
+    }
+  }
+
+  log.info(`[groupTabsFromDomain] Found ${tabIds.length} tabs, favicon: ${favicon?.substring(0, 50) || 'none'}`);
+
+  if (tabIds.length < 2) {
+    return false;
+  }
+
+  // Get color from favicon (with Google favicon service fallback)
+  log.info(`[groupTabsFromDomain] Getting color for domain: ${domain}`);
+  const color = await getColorFromFaviconWithFallback(favicon, domain);
+  log.info(`[groupTabsFromDomain] Got color: ${color}`);
+
+  // Create a new group with these tabs
+  const groupId = await chrome.tabs.group({ tabIds });
+  await chrome.tabGroups.update(groupId, {
+    title: domain,
+    color,
+  });
+
+  return true;
+}
+
+/**
+ * Check and auto-group tabs by domain if threshold is reached
+ * Called when a tab is created or navigates to a new URL
+ */
+async function checkAutoGroupByDomain(tabUrl?: string): Promise<void> {
+  const settings = await storage.getSettings();
+
+  // Skip if auto-group is disabled
+  if (!settings.autoGroupByDomain) {
+    return;
+  }
+
+  const threshold = settings.autoGroupThreshold || 3;
+
+  // Get all ungrouped tabs
+  const tabs = await chrome.tabs.query({ currentWindow: true, groupId: chrome.tabGroups.TAB_GROUP_ID_NONE });
+  const domainMap = new Map<string, { tabIds: number[]; favicon: string | undefined }>();
+
+  // Count tabs per domain
+  for (const tab of tabs) {
+    if (!tab.url || !tab.id) continue;
+    // Skip chrome:// and extension pages
+    if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) continue;
+
+    try {
+      const url = new URL(tab.url);
+      const domain = url.hostname.replace(/^www\./, '');
+      const existing = domainMap.get(domain) || { tabIds: [], favicon: undefined };
+      existing.tabIds.push(tab.id);
+      // Keep the first valid favicon
+      if (!existing.favicon && tab.favIconUrl) {
+        existing.favicon = tab.favIconUrl;
+      }
+      domainMap.set(domain, existing);
+    } catch {
+      // Invalid URL, skip
+    }
+  }
+
+  // If a specific URL was provided, prioritize checking that domain
+  let targetDomain: string | null = null;
+  if (tabUrl) {
+    try {
+      const url = new URL(tabUrl);
+      targetDomain = url.hostname.replace(/^www\./, '');
+    } catch {
+      // Invalid URL
+    }
+  }
+
+  // Check if any domain has reached the threshold
+  for (const [domain, { tabIds, favicon }] of domainMap) {
+    // If we have a target domain, only check that one
+    if (targetDomain && domain !== targetDomain) continue;
+
+    if (tabIds.length >= threshold) {
+      // Get color from favicon (with Google favicon service fallback)
+      const color = await getColorFromFaviconWithFallback(favicon, domain);
+
+      // Create a group for this domain
+      const groupId = await chrome.tabs.group({ tabIds });
+      await chrome.tabGroups.update(groupId, {
+        title: domain,
+        color,
+      });
+
+      log.info(`Auto-grouped ${tabIds.length} tabs from ${domain} with color ${color}`);
+
+      // Only group one domain at a time to avoid overwhelming the user
+      break;
+    }
+  }
 }
 
 /**
@@ -828,6 +958,13 @@ function handleMessage(
         break;
       }
 
+      case 'GROUP_TABS_BY_DOMAIN': {
+        const { domain } = message.payload as { domain: string };
+        const groupCreated = await groupTabsFromDomain(domain);
+        response = { success: true, data: { groupCreated } };
+        break;
+      }
+
       case 'GET_DUPLICATES': {
         const { ignoreQueryParams } = (message.payload as {
           ignoreQueryParams?: boolean;
@@ -906,9 +1043,14 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   updateTabActivity(activeInfo.tabId);
 });
 
-chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
+chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' || changeInfo.groupId !== undefined) {
     debouncedSave();
+  }
+
+  // Check auto-group when a tab finishes loading (has a URL now)
+  if (changeInfo.status === 'complete' && tab.url && tab.groupId === chrome.tabGroups.TAB_GROUP_ID_NONE) {
+    await checkAutoGroupByDomain(tab.url);
   }
 });
 

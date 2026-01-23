@@ -16,7 +16,7 @@ export default {
         'chrome-cyan': '#007b83',
       },
       width: {
-        popup: '400px',
+        popup: '380px',
       },
       maxHeight: {
         popup: '600px',

@@ -168,3 +168,31 @@ export function formatDate(timestamp: number): string {
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Get a consistent color based on domain name hash
+ */
+function getColorFromDomainHash(domain: string): TabGroupColor {
+  // Simple hash function
+  let hash = 0;
+  for (let i = 0; i < domain.length; i++) {
+    const char = domain.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+
+  // Map to color (excluding grey for more vibrant results)
+  const colors: TabGroupColor[] = ['blue', 'red', 'yellow', 'green', 'pink', 'purple', 'cyan'];
+  const index = Math.abs(hash) % colors.length;
+
+  console.log(`[getColorFromDomainHash] Domain: ${domain}, hash: ${hash}, color: ${colors[index]}`);
+  return colors[index];
+}
+
+/**
+ * Get color for a domain using hash-based assignment
+ */
+export async function getColorFromFaviconWithFallback(_faviconUrl: string | undefined, domain: string): Promise<TabGroupColor> {
+  console.log(`[getColorFromFavicon] Getting color for domain: "${domain}"`);
+  return getColorFromDomainHash(domain);
+}

@@ -28,6 +28,9 @@
     "alarms",
     "contextMenus"
   ],
+  "host_permissions": [
+    "https://www.google.com/s2/favicons/*"
+  ],
   "options_page": "options/options.html",
   "commands": {
     "_execute_action": {

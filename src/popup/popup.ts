@@ -141,6 +141,34 @@ function renderGroups(): void {
 }
 
 /**
+ * Get domain from URL
+ */
+function getDomain(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname.replace(/^www\./, '');
+  } catch {
+    return 'other';
+  }
+}
+
+/**
+ * Group tabs by domain
+ */
+function groupTabsByDomain(tabs: Tab[]): Map<string, Tab[]> {
+  const domainMap = new Map<string, Tab[]>();
+
+  for (const tab of tabs) {
+    const domain = getDomain(tab.url);
+    const existing = domainMap.get(domain) || [];
+    existing.push(tab);
+    domainMap.set(domain, existing);
+  }
+
+  return domainMap;
+}
+
+/**
  * Create a group card element
  */
 function createGroupCard(group: TabGroup): HTMLElement {
@@ -154,6 +182,13 @@ function createGroupCard(group: TabGroup): HTMLElement {
   }
 
   const isUngrouped = group.id === 'ungrouped';
+
+  // For ungrouped tabs, cluster by domain
+  if (isUngrouped && group.tabs.length > 0) {
+    card.innerHTML = createUngroupedCardHTML(group);
+    card.addEventListener('click', (e) => handleUngroupedCardClick(e, group));
+    return card;
+  }
 
   card.innerHTML = `
     <div class="group-card-header" data-action="toggle">
@@ -197,6 +232,125 @@ function createGroupCard(group: TabGroup): HTMLElement {
   card.addEventListener('click', (e) => handleGroupCardClick(e, group));
 
   return card;
+}
+
+/**
+ * Create HTML for ungrouped tabs card with domain clustering
+ */
+function createUngroupedCardHTML(group: TabGroup): string {
+  const domainGroups = groupTabsByDomain(group.tabs);
+  const sortedDomains = Array.from(domainGroups.entries())
+    .sort((a, b) => b[1].length - a[1].length); // Sort by tab count descending
+
+  const domainClustersHTML = sortedDomains.map(([domain, tabs]) => {
+    const canGroup = tabs.length >= 2;
+    return `
+      <div class="domain-cluster border-t border-gray-200 dark:border-gray-700" data-domain="${escapeHtml(domain)}">
+        <div class="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-gray-600 dark:text-gray-400">${escapeHtml(domain)}</span>
+            <span class="text-xs text-gray-400 dark:text-gray-500">(${tabs.length})</span>
+          </div>
+          ${canGroup ? `
+            <button
+              class="px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg"
+              data-action="group-domain"
+              data-domain="${escapeHtml(domain)}"
+              title="Create group from ${escapeHtml(domain)} tabs"
+            >
+              Group
+            </button>
+          ` : ''}
+        </div>
+        <div class="domain-tabs">
+          ${tabs.map((tab) => createTabItemHTML(tab, group.id)).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="group-card-header" data-action="toggle">
+      <div class="flex items-center gap-2">
+        <span class="group-color-indicator" style="background-color: ${getColorHex(group.color)}"></span>
+        <span class="font-medium text-sm group-name-display">${truncate(group.name, 25)}</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400">(${group.tabs.length})</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button class="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400" data-action="focus" title="Focus on ungrouped tabs">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+        </button>
+        <button class="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500" data-action="expand" title="Expand/collapse">
+          <svg class="w-5 h-5 transform transition-transform ${group.collapsed ? '' : 'rotate-180'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="group-tabs-list ${group.collapsed ? 'hidden' : ''}">
+      ${domainClustersHTML}
+    </div>
+  `;
+}
+
+/**
+ * Handle clicks on ungrouped tabs card
+ */
+async function handleUngroupedCardClick(e: Event, group: TabGroup): Promise<void> {
+  const target = e.target as HTMLElement;
+  const action = target.closest('[data-action]')?.getAttribute('data-action');
+
+  switch (action) {
+    case 'toggle':
+    case 'expand':
+      toggleGroupExpand(group.id);
+      break;
+    case 'focus':
+      await focusOnGroup(group.id);
+      break;
+    case 'group-domain':
+      const domain = target.closest('[data-domain]')?.getAttribute('data-domain');
+      if (domain) {
+        await groupTabsByDomainAction(domain);
+      }
+      break;
+    case 'close-tab':
+      const tabId = target.closest('[data-tab-id]')?.getAttribute('data-tab-id');
+      if (tabId) {
+        await closeTab(parseInt(tabId, 10));
+      }
+      break;
+    default:
+      // Click on tab item - switch to that tab
+      const tabElement = target.closest('[data-tab-id]');
+      if (tabElement && !target.closest('[data-action]')) {
+        const tabIdStr = tabElement.getAttribute('data-tab-id');
+        if (tabIdStr) {
+          await switchToTab(parseInt(tabIdStr, 10));
+        }
+      }
+  }
+}
+
+/**
+ * Group tabs from a specific domain
+ */
+async function groupTabsByDomainAction(domain: string): Promise<void> {
+  try {
+    const response = await sendMessage<{ groupCreated: boolean }>({
+      type: 'GROUP_TABS_BY_DOMAIN',
+      payload: { domain },
+    });
+
+    if (response.success) {
+      await loadGroups();
+    }
+  } catch (error) {
+    log.error('Failed to group tabs by domain', error);
+  }
 }
 
 /**

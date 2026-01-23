@@ -77,8 +77,10 @@ export interface Settings {
   autoSaveEnabled: boolean;
   /** Auto-save interval in seconds */
   autoSaveInterval: number;
-  /** Automatically group tabs by domain */
+  /** Automatically group tabs by domain when threshold is reached */
   autoGroupByDomain: boolean;
+  /** Minimum number of tabs from same domain to trigger auto-grouping */
+  autoGroupThreshold: number;
   /** Tab suspension timeout in minutes (0 = disabled) */
   suspensionTimeout: number;
   /** Domains that should never be suspended */
@@ -99,6 +101,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoSaveEnabled: true,
   autoSaveInterval: 30,
   autoGroupByDomain: false,
+  autoGroupThreshold: 3,
   suspensionTimeout: 30,
   suspensionWhitelist: [],
   showTabCountBadge: true,
@@ -145,6 +148,7 @@ export type MessageType =
   | 'GET_DUPLICATES'
   | 'MERGE_DUPLICATES'
   | 'AUTO_GROUP_BY_DOMAIN'
+  | 'GROUP_TABS_BY_DOMAIN'
   | 'SUSPEND_TAB'
   | 'UNSUSPEND_TAB'
   | 'GET_SUSPENDED_TABS';

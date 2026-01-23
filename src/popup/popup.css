@@ -4,7 +4,7 @@
 
 /* Popup container */
 html, body {
-  width: 400px;
+  width: 380px;
   min-height: 400px;
   max-height: 600px;
   overflow-x: hidden;
@@ -17,7 +17,7 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  width: 400px;
+  width: 380px;
   min-height: 400px;
 }
 
@@ -151,4 +151,13 @@ button:active:not(:disabled) {
 
 [data-tooltip]:hover::after {
   @apply opacity-100;
+}
+
+/* Domain cluster styles for ungrouped tabs */
+.domain-cluster:first-child {
+  @apply border-t-0;
+}
+
+.domain-cluster .domain-tabs {
+  @apply border-t border-gray-100 dark:border-gray-800;
 }

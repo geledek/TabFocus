@@ -11,6 +11,8 @@ const elements = {
   viewOneGroupAtATime: document.getElementById('viewOneGroupAtATime') as HTMLInputElement,
   showUngroupedTabs: document.getElementById('showUngroupedTabs') as HTMLInputElement,
   autoGroupByDomain: document.getElementById('autoGroupByDomain') as HTMLInputElement,
+  autoGroupThreshold: document.getElementById('autoGroupThreshold') as HTMLInputElement,
+  autoGroupThresholdContainer: document.getElementById('autoGroupThresholdContainer') as HTMLDivElement,
   autoSaveEnabled: document.getElementById('autoSaveEnabled') as HTMLInputElement,
   autoSaveInterval: document.getElementById('autoSaveInterval') as HTMLInputElement,
   maxSessions: document.getElementById('maxSessions') as HTMLInputElement,
@@ -54,12 +56,25 @@ function populateForm(settings: Settings): void {
   elements.viewOneGroupAtATime.checked = settings.viewOneGroupAtATime;
   elements.showUngroupedTabs.checked = settings.showUngroupedTabs;
   elements.autoGroupByDomain.checked = settings.autoGroupByDomain;
+  elements.autoGroupThreshold.value = (settings.autoGroupThreshold || 3).toString();
+  updateAutoGroupThresholdVisibility();
   elements.autoSaveEnabled.checked = settings.autoSaveEnabled;
   elements.autoSaveInterval.value = settings.autoSaveInterval.toString();
   elements.maxSessions.value = settings.maxSessions.toString();
   elements.suspensionTimeout.value = settings.suspensionTimeout.toString();
   elements.suspensionWhitelist.value = settings.suspensionWhitelist.join('\n');
   elements.showTabCountBadge.checked = settings.showTabCountBadge;
+}
+
+/**
+ * Show/hide auto-group threshold based on checkbox state
+ */
+function updateAutoGroupThresholdVisibility(): void {
+  if (elements.autoGroupByDomain.checked) {
+    elements.autoGroupThresholdContainer.classList.remove('hidden');
+  } else {
+    elements.autoGroupThresholdContainer.classList.add('hidden');
+  }
 }
 
 /**
@@ -70,6 +85,7 @@ function getFormSettings(): Settings {
     viewOneGroupAtATime: elements.viewOneGroupAtATime.checked,
     showUngroupedTabs: elements.showUngroupedTabs.checked,
     autoGroupByDomain: elements.autoGroupByDomain.checked,
+    autoGroupThreshold: parseInt(elements.autoGroupThreshold.value, 10) || DEFAULT_SETTINGS.autoGroupThreshold,
     autoSaveEnabled: elements.autoSaveEnabled.checked,
     autoSaveInterval: parseInt(elements.autoSaveInterval.value, 10) || DEFAULT_SETTINGS.autoSaveInterval,
     maxSessions: parseInt(elements.maxSessions.value, 10) || DEFAULT_SETTINGS.maxSessions,
@@ -202,9 +218,12 @@ function init(): void {
     saveSettings();
   });
 
+  // Toggle threshold visibility when auto-group checkbox changes
+  elements.autoGroupByDomain.addEventListener('change', updateAutoGroupThresholdVisibility);
+
   // Debounce number inputs
   let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-  const numberInputs = [elements.autoSaveInterval, elements.maxSessions, elements.suspensionTimeout];
+  const numberInputs = [elements.autoSaveInterval, elements.maxSessions, elements.suspensionTimeout, elements.autoGroupThreshold];
 
   numberInputs.forEach((input) => {
     input.addEventListener('input', () => {
