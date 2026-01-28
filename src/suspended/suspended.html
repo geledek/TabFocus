@@ -175,9 +175,32 @@
       document.head.appendChild(link);
     }
 
-    // Restore tab function
-    function restoreTab() {
-      if (originalUrl) {
+    // Track if we're already restoring to prevent double-restoration
+    let isRestoring = false;
+
+    // Restore tab function - sends message to background script for proper cleanup
+    async function restoreTab() {
+      if (!originalUrl || isRestoring) return;
+      isRestoring = true;
+
+      try {
+        // Get current tab ID
+        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+        const currentTab = tabs[0];
+
+        if (currentTab && currentTab.id) {
+          // Send message to background script to properly unsuspend
+          await chrome.runtime.sendMessage({
+            type: 'UNSUSPEND_TAB',
+            payload: { tabId: currentTab.id }
+          });
+        } else {
+          // Fallback: direct navigation if we can't get tab ID
+          window.location.href = originalUrl;
+        }
+      } catch (error) {
+        // Fallback: direct navigation if messaging fails
+        console.error('Failed to unsuspend via background script:', error);
         window.location.href = originalUrl;
       }
     }

@@ -111,27 +111,37 @@
         <h2 class="text-lg font-semibold mb-4">Tab Suspension (Memory Saver)</h2>
 
         <div class="space-y-4">
-          <div>
-            <label for="suspensionTimeout" class="block font-medium mb-1">Suspend tabs after (minutes)</label>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Set to 0 to disable tab suspension</p>
-            <input
-              type="number"
-              id="suspensionTimeout"
-              min="0"
-              max="1440"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-          </div>
+          <label class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">Enable tab suspension</span>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Automatically suspend inactive tabs to save memory</p>
+            </div>
+            <input type="checkbox" id="suspensionEnabled" class="toggle">
+          </label>
 
-          <div>
-            <label for="suspensionWhitelist" class="block font-medium mb-1">Never suspend these domains</label>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">One domain per line (e.g., google.com)</p>
-            <textarea
-              id="suspensionWhitelist"
-              rows="4"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="google.com&#10;github.com"
-            ></textarea>
+          <div id="suspensionOptionsContainer" class="hidden space-y-4 ml-4 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+            <div>
+              <label for="suspensionTimeout" class="block font-medium mb-1">Suspend tabs after (minutes)</label>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">How long a tab must be inactive before suspending</p>
+              <input
+                type="number"
+                id="suspensionTimeout"
+                min="1"
+                max="1440"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+            </div>
+
+            <div>
+              <label for="suspensionWhitelist" class="block font-medium mb-1">Never suspend these domains</label>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">One domain per line (e.g., google.com)</p>
+              <textarea
+                id="suspensionWhitelist"
+                rows="4"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="google.com&#10;github.com"
+              ></textarea>
+            </div>
           </div>
         </div>
       </section>

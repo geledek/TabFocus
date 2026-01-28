@@ -81,7 +81,9 @@ export interface Settings {
   autoGroupByDomain: boolean;
   /** Minimum number of tabs from same domain to trigger auto-grouping */
   autoGroupThreshold: number;
-  /** Tab suspension timeout in minutes (0 = disabled) */
+  /** Enable tab suspension (memory saver) */
+  suspensionEnabled: boolean;
+  /** Tab suspension timeout in minutes */
   suspensionTimeout: number;
   /** Domains that should never be suspended */
   suspensionWhitelist: string[];
@@ -102,6 +104,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoSaveInterval: 30,
   autoGroupByDomain: false,
   autoGroupThreshold: 3,
+  suspensionEnabled: false,
   suspensionTimeout: 30,
   suspensionWhitelist: [],
   showTabCountBadge: true,

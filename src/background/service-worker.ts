@@ -37,7 +37,7 @@ async function initialize(): Promise<void> {
   }
 
   // Set up idle check alarm for tab suspension (every 1 minute)
-  if (settings.suspensionTimeout > 0) {
+  if (settings.suspensionEnabled && settings.suspensionTimeout > 0) {
     await chrome.alarms.create('idle-check', { periodInMinutes: 1 });
   }
 
@@ -504,7 +504,7 @@ async function suspendTab(tabId: number): Promise<void> {
 async function checkIdleTabs(): Promise<void> {
   const settings = await storage.getSettings();
 
-  if (settings.suspensionTimeout <= 0) {
+  if (!settings.suspensionEnabled || settings.suspensionTimeout <= 0) {
     return;
   }
 
@@ -564,11 +564,32 @@ async function getSuspendedTabs(): Promise<Array<{ tabId: number; title: string;
  * Unsuspend a tab
  */
 async function unsuspendTab(tabId: number): Promise<void> {
+  let originalUrl: string | null = null;
+
+  // First try to get from our in-memory map
   const info = suspendedTabs.get(tabId);
   if (info) {
-    await chrome.tabs.update(tabId, { url: info.originalUrl });
+    originalUrl = info.originalUrl;
     suspendedTabs.delete(tabId);
+  } else {
+    // Fallback: extract URL from the suspended page URL
+    // This handles cases like browser restart where the map is empty
+    try {
+      const tab = await chrome.tabs.get(tabId);
+      if (tab.url && tab.url.includes('suspended/suspended.html')) {
+        const url = new URL(tab.url);
+        originalUrl = url.searchParams.get('url');
+      }
+    } catch (error) {
+      log.error('Failed to get tab for unsuspend', error);
+    }
+  }
+
+  if (originalUrl) {
+    await chrome.tabs.update(tabId, { url: originalUrl });
     log.info('Unsuspended tab', tabId);
+  } else {
+    log.warn('No original URL found for tab', tabId);
   }
 }
 
@@ -920,9 +941,9 @@ function handleMessage(
           }
         }
 
-        // Update idle-check alarm if suspension timeout changed
-        if (updates.suspensionTimeout !== undefined) {
-          if (settings.suspensionTimeout > 0) {
+        // Update idle-check alarm if suspension settings changed
+        if (updates.suspensionEnabled !== undefined || updates.suspensionTimeout !== undefined) {
+          if (settings.suspensionEnabled && settings.suspensionTimeout > 0) {
             await chrome.alarms.create('idle-check', { periodInMinutes: 1 });
           } else {
             await chrome.alarms.clear('idle-check');

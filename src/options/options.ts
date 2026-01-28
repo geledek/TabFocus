@@ -16,6 +16,8 @@ const elements = {
   autoSaveEnabled: document.getElementById('autoSaveEnabled') as HTMLInputElement,
   autoSaveInterval: document.getElementById('autoSaveInterval') as HTMLInputElement,
   maxSessions: document.getElementById('maxSessions') as HTMLInputElement,
+  suspensionEnabled: document.getElementById('suspensionEnabled') as HTMLInputElement,
+  suspensionOptionsContainer: document.getElementById('suspensionOptionsContainer') as HTMLDivElement,
   suspensionTimeout: document.getElementById('suspensionTimeout') as HTMLInputElement,
   suspensionWhitelist: document.getElementById('suspensionWhitelist') as HTMLTextAreaElement,
   showTabCountBadge: document.getElementById('showTabCountBadge') as HTMLInputElement,
@@ -61,8 +63,10 @@ function populateForm(settings: Settings): void {
   elements.autoSaveEnabled.checked = settings.autoSaveEnabled;
   elements.autoSaveInterval.value = settings.autoSaveInterval.toString();
   elements.maxSessions.value = settings.maxSessions.toString();
+  elements.suspensionEnabled.checked = settings.suspensionEnabled;
   elements.suspensionTimeout.value = settings.suspensionTimeout.toString();
   elements.suspensionWhitelist.value = settings.suspensionWhitelist.join('\n');
+  updateSuspensionOptionsVisibility();
   elements.showTabCountBadge.checked = settings.showTabCountBadge;
 }
 
@@ -78,6 +82,17 @@ function updateAutoGroupThresholdVisibility(): void {
 }
 
 /**
+ * Show/hide suspension options based on checkbox state
+ */
+function updateSuspensionOptionsVisibility(): void {
+  if (elements.suspensionEnabled.checked) {
+    elements.suspensionOptionsContainer.classList.remove('hidden');
+  } else {
+    elements.suspensionOptionsContainer.classList.add('hidden');
+  }
+}
+
+/**
  * Get settings from form
  */
 function getFormSettings(): Settings {
@@ -89,7 +104,8 @@ function getFormSettings(): Settings {
     autoSaveEnabled: elements.autoSaveEnabled.checked,
     autoSaveInterval: parseInt(elements.autoSaveInterval.value, 10) || DEFAULT_SETTINGS.autoSaveInterval,
     maxSessions: parseInt(elements.maxSessions.value, 10) || DEFAULT_SETTINGS.maxSessions,
-    suspensionTimeout: parseInt(elements.suspensionTimeout.value, 10) || 0,
+    suspensionEnabled: elements.suspensionEnabled.checked,
+    suspensionTimeout: parseInt(elements.suspensionTimeout.value, 10) || DEFAULT_SETTINGS.suspensionTimeout,
     suspensionWhitelist: elements.suspensionWhitelist.value
       .split('\n')
       .map((s) => s.trim())
@@ -220,6 +236,9 @@ function init(): void {
 
   // Toggle threshold visibility when auto-group checkbox changes
   elements.autoGroupByDomain.addEventListener('change', updateAutoGroupThresholdVisibility);
+
+  // Toggle suspension options visibility when suspension checkbox changes
+  elements.suspensionEnabled.addEventListener('change', updateSuspensionOptionsVisibility);
 
   // Debounce number inputs
   let saveTimeout: ReturnType<typeof setTimeout> | null = null;
