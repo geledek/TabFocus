@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TabFocus",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Manage browser tabs efficiently with the ability to view one group at a time",
   "icons": {
     "16": "assets/icons/icon16.png",

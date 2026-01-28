@@ -1,6 +1,6 @@
 {
   "name": "tabfocus",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Chrome extension to manage browser tabs efficiently with view one group at a time feature",
   "type": "module",
   "scripts": {
